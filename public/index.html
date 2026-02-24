@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auth System</title>
+    <style>
+      /* Modern, clean CSS using CSS variables */
+      :root {
+        --bg-color: #f3f4f6;
+        --surface-color: #ffffff;
+        --primary-color: #4f46e5;
+        --primary-hover: #4338ca;
+        --text-main: #111827;
+        --text-muted: #6b7280;
+        --border-color: #e5e7eb;
+        --error-color: #ef4444;
+        --success-color: #10b981;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: var(--text-main);
+      }
+
+      .container {
+        background-color: var(--surface-color);
+        width: 100%;
+        max-width: 400px;
+        padding: 2.5rem;
+        border-radius: 1rem;
+        box-shadow:
+          0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        font-size: 0.875rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        outline: none;
+      }
+
+      input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      }
+
+      button {
+        width: 100%;
+        padding: 0.875rem;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        margin-top: 0.5rem;
+      }
+
+      button:hover {
+        background-color: var(--primary-hover);
+      }
+
+      button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      .toggle-text {
+        text-align: center;
+        margin-top: 1.5rem;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+
+      .toggle-text a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      .toggle-text a:hover {
+        text-decoration: underline;
+      }
+
+      /* Message Box instead of alerts */
+      #message-box {
+        display: none;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .msg-error {
+        background-color: #fef2f2;
+        color: var(--error-color);
+        border: 1px solid #fecaca;
+      }
+
+      .msg-success {
+        background-color: #ecfdf5;
+        color: var(--success-color);
+        border: 1px solid #a7f3d0;
+      }
+
+      /* Dashboard specific */
+      #dashboard-view {
+        text-align: center;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Reusable Message Box -->
+      <div id="message-box"></div>
+
+      <!-- Login Form -->
+      <div id="login-view">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Please enter your details to sign in.</p>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-username">Username</label>
+            <input type="text" id="login-username" required autocomplete="username" />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" required autocomplete="current-password" />
+          </div>
+          <button type="submit" id="login-btn">Sign In</button>
+        </form>
+        <p class="toggle-text">Don't have an account? <a id="show-register">Sign up</a></p>
+      </div>
+
+      <!-- Register Form -->
+      <div id="register-view" class="hidden">
+        <h2>Create Account</h2>
+        <p class="subtitle">Join us by creating an account.</p>
+        <form id="register-form">
+          <div class="form-group">
+            <label for="reg-username">Username</label>
+            <input type="text" id="reg-username" required autocomplete="username" />
+          </div>
+          <div class="form-group">
+            <label for="reg-email">Email</label>
+            <input type="email" id="reg-email" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Password</label>
+            <input type="password" id="reg-password" required autocomplete="new-password" />
+          </div>
+          <button type="submit" id="register-btn">Sign Up</button>
+        </form>
+        <p class="toggle-text">Already have an account? <a id="show-login">Sign in</a></p>
+      </div>
+
+      <!-- Authenticated Dashboard -->
+      <div id="dashboard-view" class="hidden">
+        <h2>Dashboard</h2>
+        <p class="subtitle" id="welcome-message">Welcome, User!</p>
+        <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.875rem">
+          You are successfully logged in via JWT.
+        </p>
+        <button type="button" id="logout-btn" style="background-color: var(--error-color)">Log Out</button>
+      </div>
+    </div>
+
+    <script>
+      // public/index.html - Vanilla JS Logic
+      document.addEventListener("DOMContentLoaded", () => {
+        // DOM Elements
+        const loginView = document.getElementById("login-view");
+        const registerView = document.getElementById("register-view");
+        const dashboardView = document.getElementById("dashboard-view");
+        const messageBox = document.getElementById("message-box");
+        const welcomeMessage = document.getElementById("welcome-message");
+
+        const loginForm = document.getElementById("login-form");
+        const registerForm = document.getElementById("register-form");
+
+        // API Base URL
+        const API_URL = "/api";
+
+        // --- Utility Functions ---
+
+        const showMessage = (msg, type) => {
+          messageBox.textContent = msg;
+          messageBox.className = type === "error" ? "msg-error" : "msg-success";
+          messageBox.style.display = "block";
+          // Auto hide after 5 seconds
+          setTimeout(() => {
+            messageBox.style.display = "none";
+          }, 5000);
+        };
+
+        const switchView = (hideElem, showElem) => {
+          hideElem.classList.add("hidden");
+          showElem.classList.remove("hidden");
+          messageBox.style.display = "none"; // clear messages on switch
+        };
+
+        const checkAuthStatus = () => {
+          const token = localStorage.getItem("token");
+          const user = JSON.parse(localStorage.getItem("user"));
+          if (token && user) {
+            welcomeMessage.textContent = `Welcome back, ${user.username}!`;
+            loginView.classList.add("hidden");
+            registerView.classList.add("hidden");
+            dashboardView.classList.remove("hidden");
+          }
+        };
+
+        // --- Event Listeners ---
+
+        // Toggles
+        document
+          .getElementById("show-register")
+          .addEventListener("click", () => switchView(loginView, registerView));
+        document
+          .getElementById("show-login")
+          .addEventListener("click", () => switchView(registerView, loginView));
+
+        // Logout
+        document.getElementById("logout-btn").addEventListener("click", () => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          switchView(dashboardView, loginView);
+          showMessage("Logged out successfully.", "success");
+        });
+
+        // Login Submit
+        loginForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById("login-btn");
+          btn.disabled = true;
+          btn.textContent = "Signing in...";
+
+          const username = document.getElementById("login-username").value;
+          const password = document.getElementById("login-password").value;
+
+          try {
+            const response = await fetch(`${API_URL}/login`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.message || "Login failed");
+
+            // Save token
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            loginForm.reset();
+            checkAuthStatus();
+            showMessage("Login successful!", "success");
+          } catch (error) {
+            showMessage(error.message, "error");
+          } finally {
+            btn.disabled = false;
+            btn.textContent = "Sign In";
+          }
+        });
+
+        // Register Submit
+        registerForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById("register-btn");
+          btn.disabled = true;
+          btn.textContent = "Signing up...";
+
+          const username = document.getElementById("reg-username").value;
+          const email = document.getElementById("reg-email").value;
+          const password = document.getElementById("reg-password").value;
+
+          try {
+            const response = await fetch(`${API_URL}/register`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, email, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.message || "Registration failed");
+
+            showMessage("Registration successful! Please sign in.", "success");
+            registerForm.reset();
+            switchView(registerView, loginView);
+          } catch (error) {
+            showMessage(error.message, "error");
+          } finally {
+            btn.disabled = false;
+            btn.textContent = "Sign Up";
+          }
+        });
+
+        // Initialize
+        checkAuthStatus();
+      });
+    </script>
+  </body>
+</html>
